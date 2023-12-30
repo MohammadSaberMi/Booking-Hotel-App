@@ -1,4 +1,4 @@
-import {MdLocationOn} from "react-icons/md"
+import {MdLocationOn, MdLogout} from "react-icons/md"
 import {HiCalendar, HiMinus, HiPlus, HiSearch} from "react-icons/hi"
 import { useRef, useState } from "react"
 import useOutsideClik from "../../hooks/useOutsidClick";
@@ -6,7 +6,8 @@ import 'react-date-range/dist/styles.css'; // main style filereact-date-range/di
 import 'react-date-range/dist/theme/default.css'; // theme css file
 import { DateRange } from 'react-date-range';
 import { format } from 'date-fns';
-import { createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, createSearchParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
 function Header() {
 const [searchParams,setSearchParams]=useSearchParams();
 
@@ -52,6 +53,7 @@ const navigate=useNavigate();
     
     return (
     <div className="header">
+     <NavLink to="/bookmark">Bookmarks</NavLink>
     <div className="headerSearch">
         <div className="headerSearchItem">
            <MdLocationOn className="headerIcon locationIcon"/> 
@@ -71,12 +73,12 @@ const navigate=useNavigate();
             <div onClick={()=>setOpenDate(!openDate)} className="dateDropDown"> 
             {`${format(date[0].startDate,"MM/dd/yyyy")} to ${format(date[0].endDate,"MM/dd/yyyy")}`}
             </div> 
-{openDate && <DateRange 
-ranges={date} 
-className="date" 
-onChange={item=> setDate([item.selection])}
- minDate={new Date()}   
- moveRangeOnFirstSelection={true}
+           {openDate && <DateRange 
+           ranges={date} 
+          className="date" 
+           onChange={item=> setDate([item.selection])}
+           minDate={new Date()}   
+          moveRangeOnFirstSelection={true}
 />}
 
          <span className="seperator"></span>
@@ -99,6 +101,8 @@ onChange={item=> setDate([item.selection])}
         </div>
 
     </div>
+    <User/>
+
     </div>
   )
 }
@@ -155,5 +159,26 @@ return <div className="guestOptionItem">
     </button>
    </div> 
    </div>
+  
+}
+
+
+function User() {
+ const navigate=useNavigate()
+const {user, isAthenticated,logout}=useAuth();
+const handleLogout=()=>{
+logout();
+navigate("/");
 
 }
+  return (<div>
+    {isAthenticated ? <div>
+    <span>{user.name}</span>
+    <button>
+   &nbsp; <MdLogout onClick={handleLogout} className="logout icon" />
+     </button>
+    </div> :<NavLink to="/login">login</NavLink>}
+  </div>
+    
+     )
+  }
